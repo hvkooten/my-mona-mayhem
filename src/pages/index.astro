@@ -43,7 +43,10 @@
 					/>
 				</div>
 
-				<button id="battleBtn" type="button">⚔️ BATTLE!</button>
+				<div class="button-group">
+					<button id="battleBtn" type="button">⚔️ BATTLE!</button>
+					<button id="clearBtn" type="button" class="clear-btn">🗑️ CLEAR</button>
+				</div>
 			</div>
 
 			<div id="error" class="error" role="alert"></div>
@@ -296,6 +299,41 @@
 				cursor: not-allowed;
 			}
 
+			.button-group {
+				display: flex;
+				gap: 15px;
+				justify-content: center;
+				margin-top: 20px;
+				flex-wrap: wrap;
+			}
+
+			.clear-btn {
+				background: rgba(10, 10, 26, 0.9);
+				color: #ff6b6b;
+				border: 3px solid #ff6b6b;
+				text-shadow: 0 0 5px #ff6b6b;
+				box-shadow: 
+					0 0 15px rgba(255, 107, 107, 0.4),
+					inset 0 0 20px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s;
+				flex: 0 1 auto;
+			}
+
+			.clear-btn:hover:not(:disabled) {
+				transform: scale(1.05);
+				box-shadow: 
+					0 0 30px rgba(255, 107, 107, 0.7),
+					inset 0 0 20px rgba(255, 107, 107, 0.2);
+				text-shadow: 
+					0 0 5px #ff6b6b,
+					0 0 10px #ff6b6b,
+					0 0 20px #ff6b6b;
+			}
+
+			.clear-btn:active:not(:disabled) {
+				transform: scale(0.95);
+			}
+
 			.error {
 				display: none;
 				background: rgba(255, 0, 0, 0.1);
@@ -370,6 +408,19 @@
 				position: relative;
 				overflow: hidden;
 				box-shadow: 0 0 15px rgba(95, 237, 131, 0.3);
+				transition: all 0.4s ease;
+				animation: slideIn 0.6s ease-out;
+			}
+
+			@keyframes slideIn {
+				from {
+					opacity: 0;
+					transform: translateY(40px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
 			}
 
 			.player-result::before {
@@ -397,21 +448,71 @@
 				}
 			}
 
+			.player-result::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: linear-gradient(
+					135deg,
+					transparent 0%,
+					rgba(95, 237, 131, 0.05) 50%,
+					transparent 100%
+				);
+				pointer-events: none;
+				opacity: 0;
+			}
+
 			.player-result.winner {
 				border-color: #8a2be2;
+				background: rgba(10, 10, 26, 0.9);
 				box-shadow: 
-					0 0 30px rgba(138, 43, 226, 0.6),
-					inset 0 0 20px rgba(138, 43, 226, 0.2);
+					0 0 30px rgba(138, 43, 226, 0.8),
+					0 0 60px rgba(138, 43, 226, 0.4),
+					inset 0 0 20px rgba(138, 43, 226, 0.1);
+				animation: slideIn 0.6s ease-out, winnerGlow 2s ease-in-out infinite;
+				transform: scale(1.02);
+			}
+
+			@keyframes winnerGlow {
+				0%, 100% {
+					box-shadow: 
+						0 0 30px rgba(138, 43, 226, 0.8),
+						0 0 60px rgba(138, 43, 226, 0.4),
+						inset 0 0 20px rgba(138, 43, 226, 0.1);
+				}
+				50% {
+					box-shadow: 
+						0 0 50px rgba(138, 43, 226, 1),
+						0 0 100px rgba(138, 43, 226, 0.6),
+						inset 0 0 30px rgba(138, 43, 226, 0.2);
+				}
 			}
 
 			.player-result.winner::before {
 				background: linear-gradient(
 					90deg,
 					transparent,
-					rgba(138, 43, 226, 0.3),
+					rgba(138, 43, 226, 0.4),
 					transparent
 				);
-				animation: shimmer 2s infinite;
+				animation: shimmer 1.5s infinite;
+			}
+
+			.player-result.winner::after {
+				animation: winnerFlash 0.8s ease-in-out infinite;
+				opacity: 1;
+			}
+
+			@keyframes winnerFlash {
+				0%, 100% {
+					opacity: 0;
+				}
+				50% {
+					opacity: 0.2;
+				}
 			}
 
 			.player-name {
@@ -420,12 +521,63 @@
 				margin-bottom: 15px;
 				color: #e0e0e0;
 				text-shadow: 0 0 5px rgba(95, 237, 131, 0.5);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 15px;
+			}
+
+			.player-result.winner .player-name {
+				color: #8a2be2;
+				text-shadow: 
+					0 0 10px #8a2be2,
+					0 0 20px #8a2be2,
+					0 0 30px rgba(138, 43, 226, 0.5);
+				animation: nameGlow 1.5s ease-in-out infinite;
+			}
+
+			@keyframes nameGlow {
+				0%, 100% {
+					text-shadow: 
+						0 0 10px #8a2be2,
+						0 0 20px #8a2be2,
+						0 0 30px rgba(138, 43, 226, 0.5);
+				}
+				50% {
+					text-shadow: 
+						0 0 15px #8a2be2,
+						0 0 30px #8a2be2,
+						0 0 50px rgba(138, 43, 226, 0.8),
+						0 0 70px rgba(138, 43, 226, 0.4);
+				}
 			}
 
 			.player-stats {
 				font-size: 0.7rem;
 				color: #5fed83;
 				margin-bottom: 16px;
+				background: rgba(0, 0, 0, 0.3);
+				padding: 12px;
+				border-left: 3px solid #5fed83;
+				animation: statsSlideIn 0.8s ease-out;
+			}
+
+			@keyframes statsSlideIn {
+				from {
+					opacity: 0;
+					transform: translateX(-20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateX(0);
+				}
+			}
+
+			.player-result.winner .player-stats {
+				background: rgba(138, 43, 226, 0.15);
+				border-left-color: #8a2be2;
+				color: #a0f0ff;
+				box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
 			}
 
 			.stat-row {
@@ -439,10 +591,45 @@
 				color: #5fed83;
 			}
 
+			.player-result.winner .stat-label {
+				color: #a0f0ff;
+			}
+
 			.stat-value {
 				color: #8a2be2;
 				font-weight: bold;
 				text-shadow: 0 0 5px #8a2be2;
+				animation: valueGlow 1.5s ease-in-out infinite;
+			}
+
+			.player-result.winner .stat-value {
+				color: #ff00ff;
+				text-shadow: 
+					0 0 8px #ff00ff,
+					0 0 15px rgba(138, 43, 226, 0.8);
+				animation: winnerValueGlow 1s ease-in-out infinite;
+			}
+
+			@keyframes valueGlow {
+				0%, 100% {
+					text-shadow: 0 0 5px #8a2be2;
+				}
+				50% {
+					text-shadow: 0 0 15px #8a2be2;
+				}
+			}
+
+			@keyframes winnerValueGlow {
+				0%, 100% {
+					text-shadow: 
+						0 0 8px #ff00ff,
+						0 0 15px rgba(138, 43, 226, 0.8);
+				}
+				50% {
+					text-shadow: 
+						0 0 12px #ff00ff,
+						0 0 25px rgba(138, 43, 226, 1);
+				}
 			}
 
 			.contribution-graph-label {
@@ -452,15 +639,41 @@
 				margin-bottom: 10px;
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
+				animation: labelPulse 2s ease-in-out infinite;
+			}
+
+			@keyframes labelPulse {
+				0%, 100% {
+					color: #8a2be2;
+					text-shadow: 0 0 5px #8a2be2;
+				}
+				50% {
+					color: #a0f0ff;
+					text-shadow: 0 0 10px #8a2be2;
+				}
 			}
 
 			.contribution-grid {
 				display: flex;
 				flex-direction: column;
 				gap: 3px;
-				padding: 10px;
-				background: rgba(0, 0, 0, 0.3);
+				padding: 15px;
+				background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(138, 43, 226, 0.1));
 				overflow-x: auto;
+				border: 1px solid rgba(95, 237, 131, 0.2);
+				border-radius: 2px;
+				animation: gridFadeIn 0.8s ease-out;
+			}
+
+			@keyframes gridFadeIn {
+				from {
+					opacity: 0;
+					transform: scale(0.95);
+				}
+				to {
+					opacity: 1;
+					transform: scale(1);
+				}
 			}
 
 			.contribution-week {
@@ -474,12 +687,16 @@
 				cursor: pointer;
 				transition: all 0.3s;
 				border: 1px solid rgba(95, 237, 131, 0.2);
+				border-radius: 1px;
 			}
 
 			.contribution-day:hover {
 				transform: scale(1.5);
-				box-shadow: 0 0 10px currentColor;
+				box-shadow: 
+					0 0 10px currentColor,
+					0 0 20px rgba(255, 255, 255, 0.3);
 				z-index: 10;
+				filter: brightness(1.3);
 			}
 
 			.grid-placeholder {
@@ -495,51 +712,151 @@
 				font-weight: bold;
 				font-size: 1.3rem;
 				color: #5fed83;
-				background: rgba(10, 10, 26, 0.9);
-				padding: 12px 20px;
-				border: 2px solid #5fed83;
+				background: rgba(10, 10, 26, 0.95);
+				padding: 15px 30px;
+				border: 3px solid #5fed83;
 				align-self: center;
 				margin: -10px 0;
 				z-index: 10;
-				box-shadow: 0 0 20px rgba(95, 237, 131, 0.5);
-				text-shadow: 0 0 10px #5fed83;
-				animation: gradientShift 3s ease infinite;
+				box-shadow: 
+					0 0 30px rgba(95, 237, 131, 0.6),
+					0 0 60px rgba(95, 237, 131, 0.3),
+					inset 0 0 20px rgba(95, 237, 131, 0.1);
+				text-shadow: 0 0 15px #5fed83;
+				animation: vsBadgeRotate 3s ease infinite;
 				font-family: 'Press Start 2P', cursive;
+				letter-spacing: 3px;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.vs-badge::before {
+				content: '';
+				position: absolute;
+				top: -50%;
+				left: -50%;
+				width: 200%;
+				height: 200%;
+				background: linear-gradient(
+					45deg,
+					transparent,
+					rgba(95, 237, 131, 0.2),
+					transparent
+				);
+				animation: vShimmer 2s infinite;
+				pointer-events: none;
+			}
+
+			@keyframes vsBadgeRotate {
+				0%, 100% {
+					box-shadow: 
+						0 0 30px rgba(95, 237, 131, 0.6),
+						0 0 60px rgba(95, 237, 131, 0.3),
+						inset 0 0 20px rgba(95, 237, 131, 0.1);
+					transform: scale(1);
+				}
+				50% {
+					box-shadow: 
+						0 0 50px rgba(95, 237, 131, 0.8),
+						0 0 100px rgba(95, 237, 131, 0.5),
+						inset 0 0 30px rgba(95, 237, 131, 0.2);
+					transform: scale(1.05);
+				}
+			}
+
+			@keyframes vShimmer {
+				0% {
+					transform: translateX(-100%) translateY(-100%) rotate(45deg);
+				}
+				100% {
+					transform: translateX(100%) translateY(100%) rotate(45deg);
+				}
 			}
 
 			.winner-badge {
 				display: inline-block;
-				background: #8a2be2;
+				background: linear-gradient(135deg, #8a2be2, #ff00ff);
 				color: white;
-				padding: 6px 12px;
-				font-size: 0.6rem;
+				padding: 10px 20px;
+				font-size: 0.7rem;
 				font-weight: bold;
-				margin-left: 10px;
-				box-shadow: 0 0 15px rgba(138, 43, 226, 0.8);
-				animation: badgePulse 1s ease-in-out infinite;
+				box-shadow: 
+					0 0 20px rgba(138, 43, 226, 1),
+					0 0 40px rgba(255, 0, 255, 0.6),
+					inset 0 0 15px rgba(255, 255, 255, 0.2);
+				animation: badgePulse 0.8s ease-in-out infinite, badgeRotate 4s linear infinite;
+				transform-origin: center;
+				border: 2px solid #ff00ff;
+				letter-spacing: 1px;
+				text-shadow: 
+					0 0 5px #ff00ff,
+					0 0 10px rgba(138, 43, 226, 0.8);
+				position: relative;
+				white-space: nowrap;
 			}
 
 			@keyframes badgePulse {
 				0%, 100% {
 					transform: scale(1);
+					box-shadow: 
+						0 0 20px rgba(138, 43, 226, 1),
+						0 0 40px rgba(255, 0, 255, 0.6),
+						inset 0 0 15px rgba(255, 255, 255, 0.2);
 				}
 				50% {
-					transform: scale(1.05);
+					transform: scale(1.15);
+					box-shadow: 
+						0 0 30px rgba(138, 43, 226, 1),
+						0 0 60px rgba(255, 0, 255, 0.8),
+						inset 0 0 20px rgba(255, 255, 255, 0.3);
+				}
+			}
+
+			@keyframes badgeRotate {
+				0% {
+					filter: hue-rotate(0deg);
+				}
+				100% {
+					filter: hue-rotate(360deg);
 				}
 			}
 
 			.battle-summary {
 				text-align: center;
-				margin-top: 20px;
-				padding: 20px;
-				background: rgba(138, 43, 226, 0.2);
-				border: 2px solid #8a2be2;
-				font-size: 0.8rem;
+				margin-top: 30px;
+				padding: 25px 30px;
+				background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(138, 43, 226, 0.1));
+				border: 3px solid #8a2be2;
+				font-size: 0.9rem;
 				font-weight: bold;
-				color: #8a2be2;
-				text-shadow: 0 0 10px #8a2be2;
-				box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
-				line-height: 1.6;
+				color: #a0f0ff;
+				text-shadow: 
+					0 0 10px #8a2be2,
+					0 0 20px rgba(138, 43, 226, 0.6);
+				box-shadow: 
+					0 0 30px rgba(138, 43, 226, 0.5),
+					0 0 60px rgba(138, 43, 226, 0.3),
+					inset 0 0 20px rgba(138, 43, 226, 0.1);
+				line-height: 1.8;
+				animation: summaryPulse 2s ease-in-out infinite;
+				letter-spacing: 0.5px;
+			}
+
+			@keyframes summaryPulse {
+				0%, 100% {
+					box-shadow: 
+						0 0 30px rgba(138, 43, 226, 0.5),
+						0 0 60px rgba(138, 43, 226, 0.3),
+						inset 0 0 20px rgba(138, 43, 226, 0.1);
+					transform: scale(1);
+				}
+				50% {
+					box-shadow: 
+						0 0 50px rgba(138, 43, 226, 0.7),
+						0 0 100px rgba(138, 43, 226, 0.4),
+						inset 0 0 30px rgba(138, 43, 226, 0.2);
+					transform: scale(1.02);
+				}
 			}
 		</style>
 
