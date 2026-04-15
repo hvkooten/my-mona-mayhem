@@ -8,10 +8,406 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Mona Mayhem</title>
+		<title>Mona Mayhem - GitHub Contribution Battle Arena</title>
 	</head>
 	<body>
-		<h1>Mona Mayhem</h1>
-		<p>Welcome to Mona Mayhem! Time to build a GitHub Contribution Battle Arena.</p>
+		<main>
+			<h1>🎮 Mona Mayhem</h1>
+			<p class="subtitle">GitHub Contribution Battle Arena</p>
+
+			<div class="battle-form">
+				<div class="input-group">
+					<label for="player1">Player 1</label>
+					<input 
+						type="text" 
+						id="player1" 
+						name="player1" 
+						placeholder="Enter GitHub username"
+						autocomplete="off"
+					/>
+				</div>
+
+				<div class="vs">VS</div>
+
+				<div class="input-group">
+					<label for="player2">Player 2</label>
+					<input 
+						type="text" 
+						id="player2" 
+						name="player2" 
+						placeholder="Enter GitHub username"
+						autocomplete="off"
+					/>
+				</div>
+
+				<button id="battleBtn" type="button">⚔️ BATTLE!</button>
+			</div>
+
+			<div id="error" class="error" role="alert"></div>
+			<div id="loading" class="loading"></div>
+			<div id="results" class="results"></div>
+		</main>
+
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: system-ui, -apple-system, sans-serif;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 20px;
+			}
+
+			main {
+				background: white;
+				padding: 40px;
+				border-radius: 12px;
+				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+				max-width: 600px;
+				width: 100%;
+			}
+
+			h1 {
+				text-align: center;
+				color: #333;
+				font-size: 2.5rem;
+				margin-bottom: 10px;
+			}
+
+			.subtitle {
+				text-align: center;
+				color: #666;
+				margin-bottom: 40px;
+				font-size: 1.1rem;
+			}
+
+			.battle-form {
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+			}
+
+			.input-group {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+			}
+
+			label {
+				font-weight: 600;
+				color: #333;
+				font-size: 0.9rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			input {
+				padding: 12px 16px;
+				border: 2px solid #e0e0e0;
+				border-radius: 6px;
+				font-size: 1rem;
+				transition: border-color 0.2s;
+			}
+
+			input:focus {
+				outline: none;
+				border-color: #667eea;
+			}
+
+			.vs {
+				text-align: center;
+				font-weight: bold;
+				font-size: 1.5rem;
+				color: #667eea;
+				padding: 10px 0;
+			}
+
+			button {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				border: none;
+				padding: 16px 32px;
+				font-size: 1.2rem;
+				font-weight: bold;
+				border-radius: 8px;
+				cursor: pointer;
+				transition: transform 0.2s, box-shadow 0.2s;
+				margin-top: 10px;
+			}
+
+			button:hover:not(:disabled) {
+				transform: translateY(-2px);
+				box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+			}
+
+			button:active:not(:disabled) {
+				transform: translateY(0);
+			}
+
+			button:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+
+			.error {
+				display: none;
+				background: #fee;
+				color: #c33;
+				padding: 12px 16px;
+				border-radius: 6px;
+				margin-top: 20px;
+				border-left: 4px solid #c33;
+			}
+
+			.error.show {
+				display: block;
+			}
+
+			.loading {
+				display: none;
+				text-align: center;
+				margin-top: 30px;
+				font-size: 1.1rem;
+				color: #667eea;
+			}
+
+			.loading.show {
+				display: block;
+			}
+
+			.loading::after {
+				content: '...';
+				animation: dots 1.5s steps(4, end) infinite;
+			}
+
+			@keyframes dots {
+				0%, 20% { content: '.'; }
+				40% { content: '..'; }
+				60%, 100% { content: '...'; }
+			}
+
+			.results {
+				display: none;
+				margin-top: 30px;
+			}
+
+			.results.show {
+				display: block;
+			}
+
+			.player-result {
+				background: #f5f5f5;
+				padding: 20px;
+				border-radius: 8px;
+				margin-bottom: 15px;
+			}
+
+			.player-result.winner {
+				background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+				border: 3px solid #f39c12;
+			}
+
+			.player-name {
+				font-size: 1.3rem;
+				font-weight: bold;
+				margin-bottom: 8px;
+			}
+
+			.player-stats {
+				font-size: 1.1rem;
+				color: #555;
+			}
+
+			.winner-badge {
+				display: inline-block;
+				background: #f39c12;
+				color: white;
+				padding: 4px 12px;
+				border-radius: 20px;
+				font-size: 0.9rem;
+				font-weight: bold;
+				margin-left: 10px;
+			}
+
+			.battle-summary {
+				text-align: center;
+				margin-top: 20px;
+				padding: 15px;
+				background: #667eea;
+				color: white;
+				border-radius: 8px;
+				font-size: 1.2rem;
+				font-weight: bold;
+			}
+		</style>
+
+		<script>
+			const player1Input = document.getElementById('player1') as HTMLInputElement;
+			const player2Input = document.getElementById('player2') as HTMLInputElement;
+			const battleBtn = document.getElementById('battleBtn') as HTMLButtonElement;
+			const errorDiv = document.getElementById('error') as HTMLDivElement;
+			const loadingDiv = document.getElementById('loading') as HTMLDivElement;
+			const resultsDiv = document.getElementById('results') as HTMLDivElement;
+
+			interface ContributionData {
+				years: Array<{
+					year: string;
+					total: number;
+					range: {
+						start: string;
+						end: string;
+					};
+				}>;
+			}
+
+			interface PlayerData {
+				username: string;
+				totalContributions: number;
+				data: ContributionData;
+			}
+
+			function showError(message: string) {
+				errorDiv.textContent = message;
+				errorDiv.classList.add('show');
+			}
+
+			function hideError() {
+				errorDiv.textContent = '';
+				errorDiv.classList.remove('show');
+			}
+
+			function showLoading(message: string = 'Fetching battle data') {
+				loadingDiv.textContent = message;
+				loadingDiv.classList.add('show');
+			}
+
+			function hideLoading() {
+				loadingDiv.textContent = '';
+				loadingDiv.classList.remove('show');
+			}
+
+			function hideResults() {
+				resultsDiv.innerHTML = '';
+				resultsDiv.classList.remove('show');
+			}
+
+			async function fetchContributions(username: string): Promise<ContributionData> {
+				const response = await fetch(`/api/contributions/${username}`);
+				
+				if (!response.ok) {
+					const error = await response.json();
+					throw new Error(error.error || `Failed to fetch data for ${username}`);
+				}
+
+				return await response.json();
+			}
+
+			function calculateTotalContributions(data: ContributionData): number {
+				return data.years.reduce((total, year) => total + year.total, 0);
+			}
+
+			function displayResults(player1: PlayerData, player2: PlayerData) {
+				const isPlayer1Winner = player1.totalContributions > player2.totalContributions;
+				const isPlayer2Winner = player2.totalContributions > player1.totalContributions;
+				const isTie = player1.totalContributions === player2.totalContributions;
+
+				resultsDiv.innerHTML = `
+					<div class="player-result ${isPlayer1Winner ? 'winner' : ''}">
+						<div class="player-name">
+							${player1.username}
+							${isPlayer1Winner ? '<span class="winner-badge">🏆 WINNER</span>' : ''}
+						</div>
+						<div class="player-stats">
+							Total Contributions: ${player1.totalContributions.toLocaleString()}
+						</div>
+					</div>
+
+					<div class="player-result ${isPlayer2Winner ? 'winner' : ''}">
+						<div class="player-name">
+							${player2.username}
+							${isPlayer2Winner ? '<span class="winner-badge">🏆 WINNER</span>' : ''}
+						</div>
+						<div class="player-stats">
+							Total Contributions: ${player2.totalContributions.toLocaleString()}
+						</div>
+					</div>
+
+					<div class="battle-summary">
+						${isTie ? '🤝 It\'s a tie!' : 
+							isPlayer1Winner ? `🎉 ${player1.username} wins!` : 
+							`🎉 ${player2.username} wins!`}
+					</div>
+				`;
+
+				resultsDiv.classList.add('show');
+			}
+
+			async function handleBattle() {
+				const username1 = player1Input.value.trim();
+				const username2 = player2Input.value.trim();
+
+				hideError();
+				hideResults();
+
+				// Validate inputs
+				if (!username1 || !username2) {
+					showError('Please enter both usernames');
+					return;
+				}
+
+				// Disable button and show loading
+				battleBtn.disabled = true;
+				showLoading();
+
+				try {
+					// Fetch both users' data in parallel
+					const [data1, data2] = await Promise.all([
+						fetchContributions(username1),
+						fetchContributions(username2)
+					]);
+
+					// Calculate totals
+					const player1Data: PlayerData = {
+						username: username1,
+						totalContributions: calculateTotalContributions(data1),
+						data: data1
+					};
+
+					const player2Data: PlayerData = {
+						username: username2,
+						totalContributions: calculateTotalContributions(data2),
+						data: data2
+					};
+
+					// Display results
+					displayResults(player1Data, player2Data);
+
+				} catch (error) {
+					showError(error instanceof Error ? error.message : 'An error occurred during the battle');
+				} finally {
+					hideLoading();
+					battleBtn.disabled = false;
+				}
+			}
+
+			// Attach event listener
+			battleBtn.addEventListener('click', handleBattle);
+
+			// Allow Enter key in inputs
+			[player1Input, player2Input].forEach(input => {
+				input.addEventListener('keypress', (e) => {
+					if (e.key === 'Enter') {
+						handleBattle();
+					}
+				});
+			});
+		</script>
 	</body>
 </html>
