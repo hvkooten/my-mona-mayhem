@@ -202,11 +202,19 @@
 				display: block;
 			}
 
+			.results-container {
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+				align-items: stretch;
+				position: relative;
+			}
+
 			.player-result {
 				background: #f5f5f5;
 				padding: 20px;
 				border-radius: 8px;
-				margin-bottom: 15px;
+				flex: 1;
 			}
 
 			.player-result.winner {
@@ -217,12 +225,88 @@
 			.player-name {
 				font-size: 1.3rem;
 				font-weight: bold;
-				margin-bottom: 8px;
+				margin-bottom: 12px;
 			}
 
 			.player-stats {
-				font-size: 1.1rem;
+				font-size: 1rem;
 				color: #555;
+				margin-bottom: 16px;
+			}
+
+			.stat-row {
+				display: flex;
+				justify-content: space-between;
+				margin-bottom: 8px;
+			}
+
+			.stat-label {
+				font-weight: 600;
+				color: #333;
+			}
+
+			.stat-value {
+				color: #667eea;
+				font-weight: bold;
+			}
+
+			.contribution-graph-label {
+				font-size: 0.9rem;
+				font-weight: 600;
+				color: #666;
+				margin-bottom: 10px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			.contribution-grid {
+				display: flex;
+				flex-direction: column;
+				gap: 3px;
+				padding: 10px;
+				background: white;
+				border-radius: 6px;
+				overflow-x: auto;
+			}
+
+			.contribution-week {
+				display: flex;
+				gap: 3px;
+			}
+
+			.contribution-day {
+				width: 12px;
+				height: 12px;
+				border-radius: 2px;
+				cursor: pointer;
+				transition: opacity 0.2s;
+			}
+
+			.contribution-day:hover {
+				opacity: 0.8;
+			}
+
+			.grid-placeholder {
+				padding: 20px;
+				text-align: center;
+				color: #999;
+				background: white;
+				border-radius: 6px;
+				font-size: 0.9rem;
+			}
+
+			.vs-badge {
+				text-align: center;
+				font-weight: bold;
+				font-size: 1.3rem;
+				color: white;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				padding: 12px 20px;
+				border-radius: 8px;
+				align-self: center;
+				margin: -10px 0;
+				z-index: 10;
+				box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 			}
 
 			.winner-badge {
@@ -256,14 +340,31 @@
 			const loadingDiv = document.getElementById('loading') as HTMLDivElement;
 			const resultsDiv = document.getElementById('results') as HTMLDivElement;
 
+			interface ContributionDay {
+				weekday: number;
+				count: number;
+				level: number;
+			}
+
+			interface ContributionWeek {
+				index: number;
+				first_day: string;
+				contribution_days: ContributionDay[];
+			}
+
 			interface ContributionData {
-				years: Array<{
-					year: string;
-					total: number;
-					range: {
-						start: string;
-						end: string;
-					};
+				schema: string;
+				generated_at: string;
+				from: string;
+				to: string;
+				range_days: number;
+				total_contributions: number;
+				private_contributions_included: boolean;
+				colors_full: string[];
+				weeks: ContributionWeek[];
+				months: Array<{
+					month: string;
+					total_weeks: number;
 				}>;
 			}
 
@@ -271,7 +372,20 @@
 				username: string;
 				totalContributions: number;
 				data: ContributionData;
+				dateRange: {
+					start: string;
+					end: string;
+				};
 			}
+
+			// GitHub contribution color palette (based on levels 0-4)
+			const CONTRIBUTION_COLORS: Record<number, string> = {
+				0: '#ebedf0',
+				1: '#c6e48b',
+				2: '#40c463',
+				3: '#30a14e',
+				4: '#216e39'
+			};
 
 			function showError(message: string) {
 				errorDiv.textContent = message;
@@ -310,7 +424,44 @@
 			}
 
 			function calculateTotalContributions(data: ContributionData): number {
-				return data.years.reduce((total, year) => total + year.total, 0);
+				if (!data || typeof data.total_contributions !== 'number') {
+					console.error('Invalid contribution data structure:', data);
+					return 0;
+				}
+				return data.total_contributions;
+			}
+
+			function renderContributionGrid(data: ContributionData, username: string): string {
+				if (!data || !Array.isArray(data.weeks) || data.weeks.length === 0) {
+					return '<div class="grid-placeholder">No contribution data available</div>';
+				}
+
+				// Create grid HTML from weeks
+				const weeksHTML = data.weeks.map(week => {
+					if (!week || !Array.isArray(week.contribution_days)) {
+						return '<div class="contribution-week"></div>';
+					}
+					const daysHTML = week.contribution_days.map(day => {
+						if (!day) return '';
+						const level = day.level || 0;
+						const color = CONTRIBUTION_COLORS[level] || '#ebedf0';
+						const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day.weekday];
+						return `<div class="contribution-day" style="background-color: ${color};" title="${dayName}: ${day.count} contributions"></div>`;
+					}).join('');
+					return `<div class="contribution-week">${daysHTML}</div>`;
+				}).join('');
+
+				return `<div class="contribution-grid">${weeksHTML}</div>`;
+			}
+
+			function getDateRange(data: ContributionData): { start: string; end: string } {
+				if (!data) {
+					return { start: 'N/A', end: 'N/A' };
+				}
+				return {
+					start: data.from || 'N/A',
+					end: data.to || 'N/A'
+				};
 			}
 
 			function displayResults(player1: PlayerData, player2: PlayerData) {
@@ -318,31 +469,56 @@
 				const isPlayer2Winner = player2.totalContributions > player1.totalContributions;
 				const isTie = player1.totalContributions === player2.totalContributions;
 
-				resultsDiv.innerHTML = `
-					<div class="player-result ${isPlayer1Winner ? 'winner' : ''}">
-						<div class="player-name">
-							${player1.username}
-							${isPlayer1Winner ? '<span class="winner-badge">🏆 WINNER</span>' : ''}
-						</div>
-						<div class="player-stats">
-							Total Contributions: ${player1.totalContributions.toLocaleString()}
-						</div>
-					</div>
+				const player1Grid = renderContributionGrid(player1.data, player1.username);
+				const player2Grid = renderContributionGrid(player2.data, player2.username);
 
-					<div class="player-result ${isPlayer2Winner ? 'winner' : ''}">
-						<div class="player-name">
-							${player2.username}
-							${isPlayer2Winner ? '<span class="winner-badge">🏆 WINNER</span>' : ''}
+				resultsDiv.innerHTML = `
+					<div class="results-container">
+						<div class="player-result ${isPlayer1Winner ? 'winner' : ''}">
+							<div class="player-name">
+								${player1.username}
+								${isPlayer1Winner ? '<span class="winner-badge">🏆 WINNER</span>' : ''}
+							</div>
+							<div class="player-stats">
+								<div class="stat-row">
+									<span class="stat-label">Total Contributions:</span>
+									<span class="stat-value">${player1.totalContributions.toLocaleString()}</span>
+								</div>
+								<div class="stat-row">
+									<span class="stat-label">Period:</span>
+									<span class="stat-value">${player1.dateRange.start} to ${player1.dateRange.end}</span>
+								</div>
+							</div>
+							<div class="contribution-graph-label">Last Year Activity</div>
+							${player1Grid}
 						</div>
-						<div class="player-stats">
-							Total Contributions: ${player2.totalContributions.toLocaleString()}
+
+						<div class="vs-badge">VS</div>
+
+						<div class="player-result ${isPlayer2Winner ? 'winner' : ''}">
+							<div class="player-name">
+								${player2.username}
+								${isPlayer2Winner ? '<span class="winner-badge">🏆 WINNER</span>' : ''}
+							</div>
+							<div class="player-stats">
+								<div class="stat-row">
+									<span class="stat-label">Total Contributions:</span>
+									<span class="stat-value">${player2.totalContributions.toLocaleString()}</span>
+								</div>
+								<div class="stat-row">
+									<span class="stat-label">Period:</span>
+									<span class="stat-value">${player2.dateRange.start} to ${player2.dateRange.end}</span>
+								</div>
+							</div>
+							<div class="contribution-graph-label">Last Year Activity</div>
+							${player2Grid}
 						</div>
 					</div>
 
 					<div class="battle-summary">
 						${isTie ? '🤝 It\'s a tie!' : 
-							isPlayer1Winner ? `🎉 ${player1.username} wins!` : 
-							`🎉 ${player2.username} wins!`}
+							isPlayer1Winner ? `🎉 ${player1.username} wins with ${(player1.totalContributions - player2.totalContributions).toLocaleString()} more contributions!` : 
+							`🎉 ${player2.username} wins with ${(player2.totalContributions - player1.totalContributions).toLocaleString()} more contributions!`}
 					</div>
 				`;
 
@@ -373,23 +549,37 @@
 						fetchContributions(username2)
 					]);
 
-					// Calculate totals
+					// Validate data structure
+					if (!data1 || typeof data1 !== 'object') {
+						throw new Error(`Invalid data received for user ${username1}`);
+					}
+					if (!data2 || typeof data2 !== 'object') {
+						throw new Error(`Invalid data received for user ${username2}`);
+					}
+
+					// Calculate totals and date ranges
+					const dateRange1 = getDateRange(data1);
+					const dateRange2 = getDateRange(data2);
+
 					const player1Data: PlayerData = {
 						username: username1,
 						totalContributions: calculateTotalContributions(data1),
-						data: data1
+						data: data1,
+						dateRange: dateRange1
 					};
 
 					const player2Data: PlayerData = {
 						username: username2,
 						totalContributions: calculateTotalContributions(data2),
-						data: data2
+						data: data2,
+						dateRange: dateRange2
 					};
 
 					// Display results
 					displayResults(player1Data, player2Data);
 
 				} catch (error) {
+					console.error('Battle error:', error);
 					showError(error instanceof Error ? error.message : 'An error occurred during the battle');
 				} finally {
 					hideLoading();
