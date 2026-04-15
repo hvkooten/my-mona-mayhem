@@ -648,7 +648,7 @@
 				4: '#216e39'   // Very high activity
 			};
 
-			function showError(message: string) {
+			function showError(message) {
 				errorDiv.textContent = message;
 				errorDiv.classList.add('show');
 			}
@@ -658,7 +658,7 @@
 				errorDiv.classList.remove('show');
 			}
 
-			function showLoading(message: string = 'Fetching battle data') {
+			function showLoading(message = 'Fetching battle data') {
 				loadingDiv.textContent = message;
 				loadingDiv.classList.add('show');
 			}
@@ -920,14 +920,14 @@
 					const dateRange1 = getDateRange(data1);
 					const dateRange2 = getDateRange(data2);
 
-					const player1Data: PlayerData = {
+					const player1Data = {
 						username: username1,
 						totalContributions: calculateTotalContributions(data1),
 						data: data1,
 						dateRange: dateRange1
 					};
 
-					const player2Data: PlayerData = {
+					const player2Data = {
 						username: username2,
 						totalContributions: calculateTotalContributions(data2),
 						data: data2,
