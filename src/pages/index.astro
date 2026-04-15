@@ -688,6 +688,23 @@
 				}
 			}
 
+			@keyframes shimmerPlaceholder {
+				0%, 100% {
+					color: #5fed83;
+					text-shadow: 
+						0 0 10px #5fed83,
+						0 0 20px rgba(95, 237, 131, 0.6),
+						0 0 30px rgba(95, 237, 131, 0.3);
+				}
+				50% {
+					color: #a0f0ff;
+					text-shadow: 
+						0 0 10px #a0f0ff,
+						0 0 20px rgba(160, 240, 255, 0.6),
+						0 0 30px rgba(160, 240, 255, 0.3);
+				}
+			}
+
 			.contribution-week {
 				display: flex;
 				gap: 3px;
@@ -714,9 +731,14 @@
 			.grid-placeholder {
 				padding: 20px;
 				text-align: center;
-				color: #666;
+				color: #5fed83;
 				background: rgba(0, 0, 0, 0.3);
 				font-size: 0.7rem;
+				animation: shimmerPlaceholder 1.5s ease-in-out infinite;
+				text-shadow: 
+					0 0 10px #5fed83,
+					0 0 20px rgba(95, 237, 131, 0.6),
+					0 0 30px rgba(95, 237, 131, 0.3);
 			}
 
 			.vs-badge {
