@@ -864,9 +864,14 @@
 			const player1Input = document.getElementById('player1') as HTMLInputElement;
 			const player2Input = document.getElementById('player2') as HTMLInputElement;
 			const battleBtn = document.getElementById('battleBtn') as HTMLButtonElement;
+			const clearBtn = document.getElementById('clearBtn') as HTMLButtonElement;
 			const errorDiv = document.getElementById('error') as HTMLDivElement;
 			const loadingDiv = document.getElementById('loading') as HTMLDivElement;
 			const resultsDiv = document.getElementById('results') as HTMLDivElement;
+
+			// LocalStorage keys for saving usernames
+			const STORAGE_KEY_PLAYER1 = 'mona-mayhem-player1';
+			const STORAGE_KEY_PLAYER2 = 'mona-mayhem-player2';
 
 			/**
 			 * Represents a single day's contribution data in GitHub's contribution graph.
@@ -1265,6 +1270,48 @@
 
 			// Attach event listener
 			battleBtn.addEventListener('click', handleBattle);
+
+			// Clear button functionality
+			clearBtn.addEventListener('click', () => {
+				player1Input.value = '';
+				player2Input.value = '';
+				localStorage.removeItem(STORAGE_KEY_PLAYER1);
+				localStorage.removeItem(STORAGE_KEY_PLAYER2);
+				hideError();
+				hideResults();
+			});
+
+			// Save usernames to localStorage when they change
+			player1Input.addEventListener('input', (e) => {
+				const value = (e.target as HTMLInputElement).value;
+				if (value) {
+					localStorage.setItem(STORAGE_KEY_PLAYER1, value);
+				} else {
+					localStorage.removeItem(STORAGE_KEY_PLAYER1);
+				}
+			});
+
+			player2Input.addEventListener('input', (e) => {
+				const value = (e.target as HTMLInputElement).value;
+				if (value) {
+					localStorage.setItem(STORAGE_KEY_PLAYER2, value);
+				} else {
+					localStorage.removeItem(STORAGE_KEY_PLAYER2);
+				}
+			});
+
+			// Load saved usernames on page load
+			window.addEventListener('load', () => {
+				const savedPlayer1 = localStorage.getItem(STORAGE_KEY_PLAYER1);
+				const savedPlayer2 = localStorage.getItem(STORAGE_KEY_PLAYER2);
+				
+				if (savedPlayer1) {
+					player1Input.value = savedPlayer1;
+				}
+				if (savedPlayer2) {
+					player2Input.value = savedPlayer2;
+				}
+			});
 
 			// Allow Enter key in inputs
 			[player1Input, player2Input].forEach(input => {
