@@ -543,54 +543,16 @@
 			}
 		</style>
 
-		<script>
-			const player1Input = document.getElementById('player1') as HTMLInputElement;
-			const player2Input = document.getElementById('player2') as HTMLInputElement;
-			const battleBtn = document.getElementById('battleBtn') as HTMLButtonElement;
-			const errorDiv = document.getElementById('error') as HTMLDivElement;
-			const loadingDiv = document.getElementById('loading') as HTMLDivElement;
-			const resultsDiv = document.getElementById('results') as HTMLDivElement;
-
-			interface ContributionDay {
-				weekday: number;
-				count: number;
-				level: number;
-			}
-
-			interface ContributionWeek {
-				index: number;
-				first_day: string;
-				contribution_days: ContributionDay[];
-			}
-
-			interface ContributionData {
-				schema: string;
-				generated_at: string;
-				from: string;
-				to: string;
-				range_days: number;
-				total_contributions: number;
-				private_contributions_included: boolean;
-				colors_full: string[];
-				weeks: ContributionWeek[];
-				months: Array<{
-					month: string;
-					total_weeks: number;
-				}>;
-			}
-
-			interface PlayerData {
-				username: string;
-				totalContributions: number;
-				data: ContributionData;
-				dateRange: {
-					start: string;
-					end: string;
-				};
-			}
+		<script is:inline>
+			const player1Input = document.getElementById('player1');
+			const player2Input = document.getElementById('player2');
+			const battleBtn = document.getElementById('battleBtn');
+			const errorDiv = document.getElementById('error');
+			const loadingDiv = document.getElementById('loading');
+			const resultsDiv = document.getElementById('results');
 
 			// GitHub contribution color palette (based on levels 0-4)
-			const CONTRIBUTION_COLORS: Record<number, string> = {
+			const CONTRIBUTION_COLORS = {
 				0: '#ebedf0',
 				1: '#c6e48b',
 				2: '#40c463',
@@ -598,7 +560,7 @@
 				4: '#216e39'
 			};
 
-			function showError(message: string) {
+			function showError(message) {
 				errorDiv.textContent = message;
 				errorDiv.classList.add('show');
 			}
@@ -608,7 +570,7 @@
 				errorDiv.classList.remove('show');
 			}
 
-			function showLoading(message: string = 'Fetching battle data') {
+			function showLoading(message = 'Fetching battle data') {
 				loadingDiv.textContent = message;
 				loadingDiv.classList.add('show');
 			}
@@ -623,7 +585,7 @@
 				resultsDiv.classList.remove('show');
 			}
 
-			async function fetchContributions(username: string): Promise<ContributionData> {
+			async function fetchContributions(username) {
 				const response = await fetch(`/api/contributions/${username}`);
 				
 				if (!response.ok) {
@@ -634,7 +596,7 @@
 				return await response.json();
 			}
 
-			function calculateTotalContributions(data: ContributionData): number {
+			function calculateTotalContributions(data) {
 				if (!data || typeof data.total_contributions !== 'number') {
 					console.error('Invalid contribution data structure:', data);
 					return 0;
@@ -642,7 +604,7 @@
 				return data.total_contributions;
 			}
 
-			function renderContributionGrid(data: ContributionData, username: string): string {
+			function renderContributionGrid(data, username) {
 				if (!data || !Array.isArray(data.weeks) || data.weeks.length === 0) {
 					return '<div class="grid-placeholder">No contribution data available</div>';
 				}
@@ -665,7 +627,7 @@
 				return `<div class="contribution-grid">${weeksHTML}</div>`;
 			}
 
-			function getDateRange(data: ContributionData): { start: string; end: string } {
+			function getDateRange(data) {
 				if (!data) {
 					return { start: 'N/A', end: 'N/A' };
 				}
@@ -675,7 +637,7 @@
 				};
 			}
 
-			function displayResults(player1: PlayerData, player2: PlayerData) {
+			function displayResults(player1, player2) {
 				const isPlayer1Winner = player1.totalContributions > player2.totalContributions;
 				const isPlayer2Winner = player2.totalContributions > player1.totalContributions;
 				const isTie = player1.totalContributions === player2.totalContributions;
@@ -772,14 +734,14 @@
 					const dateRange1 = getDateRange(data1);
 					const dateRange2 = getDateRange(data2);
 
-					const player1Data: PlayerData = {
+					const player1Data = {
 						username: username1,
 						totalContributions: calculateTotalContributions(data1),
 						data: data1,
 						dateRange: dateRange1
 					};
 
-					const player2Data: PlayerData = {
+					const player2Data = {
 						username: username2,
 						totalContributions: calculateTotalContributions(data2),
 						data: data2,
