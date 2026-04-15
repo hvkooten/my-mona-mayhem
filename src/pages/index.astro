@@ -551,18 +551,52 @@
 			const loadingDiv = document.getElementById('loading') as HTMLDivElement;
 			const resultsDiv = document.getElementById('results') as HTMLDivElement;
 
+			/**
+			 * Represents a single day's contribution data in GitHub's contribution graph.
+			 * GitHub provides contribution data with levels 0-4 indicating intensity.
+			 * 
+			 * @interface ContributionDay
+			 * @property {number} weekday - Day of week (0 = Sunday, 6 = Saturday)
+			 * @property {number} count - Total contributions on this day
+			 * @property {number} level - Contribution intensity level (0-4)
+			 *   0 = none, 1 = low, 2 = medium, 3 = high, 4 = very high
+			 */
 			interface ContributionDay {
 				weekday: number;
 				count: number;
 				level: number;
 			}
 
+			/**
+			 * Represents a week of contribution data (7 days).
+			 * 
+			 * @interface ContributionWeek
+			 * @property {number} index - Week index in the response
+			 * @property {string} first_day - First day of the week (YYYY-MM-DD format)
+			 * @property {ContributionDay[]} contribution_days - Array of 7 contribution day objects
+			 */
 			interface ContributionWeek {
 				index: number;
 				first_day: string;
 				contribution_days: ContributionDay[];
 			}
 
+			/**
+			 * Full contribution data response from GitHub API (v2 format).
+			 * This is the complete structure returned by https://github.com/{username}.contribs
+			 * 
+			 * @interface ContributionData
+			 * @property {string} schema - API version (e.g., "v2")
+			 * @property {string} generated_at - ISO timestamp when data was generated
+			 * @property {string} from - Start date of contribution range (YYYY-MM-DD)
+			 * @property {string} to - End date of contribution range (YYYY-MM-DD)
+			 * @property {number} range_days - Total days in the range
+			 * @property {number} total_contributions - Sum of all contributions in range
+			 * @property {boolean} private_contributions_included - Whether private repos are counted
+			 * @property {string[]} colors_full - Hex color palette for visualization
+			 * @property {ContributionWeek[]} weeks - Array of weeks with daily contribution data
+			 * @property {Array} months - Month metadata
+			 */
 			interface ContributionData {
 				schema: string;
 				generated_at: string;
@@ -579,6 +613,18 @@
 				}>;
 			}
 
+			/**
+			 * Player data used during battle comparison.
+			 * Wraps contribution data with calculated totals and date ranges.
+			 * 
+			 * @interface PlayerData
+			 * @property {string} username - GitHub username
+			 * @property {number} totalContributions - Total contributions in range
+			 * @property {ContributionData} data - Full API response object
+			 * @property {Object} dateRange - Extracted date range
+			 * @property {string} dateRange.start - Start date (YYYY-MM-DD)
+			 * @property {string} dateRange.end - End date (YYYY-MM-DD)
+			 */
 			interface PlayerData {
 				username: string;
 				totalContributions: number;
@@ -590,12 +636,16 @@
 			}
 
 			// GitHub contribution color palette (based on levels 0-4)
+			// Maps contribution levels to hex colors matching GitHub's official palette
+			// Level 0: No contributions (light gray)
+			// Level 1-2: Light to medium activity (green shades)
+			// Level 3-4: High activity (darker green shades)
 			const CONTRIBUTION_COLORS: Record<number, string> = {
-				0: '#ebedf0',
-				1: '#c6e48b',
-				2: '#40c463',
-				3: '#30a14e',
-				4: '#216e39'
+				0: '#ebedf0',  // No contributions
+				1: '#c6e48b',  // Low activity
+				2: '#40c463',  // Medium activity
+				3: '#30a14e',  // High activity
+				4: '#216e39'   // Very high activity
 			};
 
 			function showError(message: string) {
@@ -618,11 +668,29 @@
 				loadingDiv.classList.remove('show');
 			}
 
+			/**
+			 * Clears all result data from the results container and hides it.
+			 * Called before starting a new battle to ensure clean state.
+			 */
 			function hideResults() {
 				resultsDiv.innerHTML = '';
 				resultsDiv.classList.remove('show');
 			}
 
+			/**
+			 * Fetches a user's contribution data from the server API.
+			 * The API proxy handles GitHub rate limiting and CORS.
+			 * Contributions are cached server-side for 5 minutes.
+			 * 
+			 * @async
+			 * @param {string} username - GitHub username to fetch data for
+			 * @returns {Promise<ContributionData>} The contribution data or throws on error
+			 * @throws {Error} If username is not found or API returns error
+			 * 
+			 * @example
+			 * const data = await fetchContributions('torvalds');
+			 * console.log(data.total_contributions); // 2986
+			 */
 			async function fetchContributions(username: string): Promise<ContributionData> {
 				const response = await fetch(`/api/contributions/${username}`);
 				
@@ -634,6 +702,17 @@
 				return await response.json();
 			}
 
+			/**
+			 * Calculates the total contribution count from contribution data.
+			 * Safely extracts the total_contributions field with null-checks.
+			 * 
+			 * @param {ContributionData} data - Contribution data object
+			 * @returns {number} Total contributions, or 0 if data is invalid
+			 * 
+			 * @example
+			 * const total = calculateTotalContributions(data);
+			 * console.log(total.toLocaleString()); // "2,986"
+			 */
 			function calculateTotalContributions(data: ContributionData): number {
 				if (!data || typeof data.total_contributions !== 'number') {
 					console.error('Invalid contribution data structure:', data);
@@ -642,6 +721,19 @@
 				return data.total_contributions;
 			}
 
+			/**
+			 * Generates HTML for a contribution graph grid visualization.
+			 * Creates a week-by-week grid where each day is a colored square based on contribution level.
+			 * Uses GitHub's official color palette (levels 0-4 map to specific hex colors).
+			 * 
+			 * @param {ContributionData} data - Contribution data with weeks array
+			 * @param {string} username - Username (for debugging, not used in output)
+			 * @returns {string} HTML string containing the contribution grid, or placeholder message
+			 * 
+			 * @example
+			 * const html = renderContributionGrid(data, 'torvalds');
+			 * // Returns: '<div class="contribution-grid">...'
+			 */
 			function renderContributionGrid(data: ContributionData, username: string): string {
 				if (!data || !Array.isArray(data.weeks) || data.weeks.length === 0) {
 					return '<div class="grid-placeholder">No contribution data available</div>';
@@ -665,6 +757,19 @@
 				return `<div class="contribution-grid">${weeksHTML}</div>`;
 			}
 
+			/**
+			 * Extracts the date range from contribution data.
+			 * Returns the 'from' and 'to' dates from the API response.
+			 * 
+			 * @param {ContributionData} data - Contribution data object
+			 * @returns {Object} Date range object with start and end dates (YYYY-MM-DD format)
+			 * @returns {string} .start - Start date
+			 * @returns {string} .end - End date
+			 * 
+			 * @example
+			 * const range = getDateRange(data);
+			 * console.log(range); // { start: '2025-04-13', end: '2026-04-15' }
+			 */
 			function getDateRange(data: ContributionData): { start: string; end: string } {
 				if (!data) {
 					return { start: 'N/A', end: 'N/A' };
@@ -675,6 +780,18 @@
 				};
 			}
 
+			/**
+			 * Renders the battle comparison results showing both players' data.
+			 * Displays contribution graphs, totals, date ranges, and determines the winner.
+			 * Winner is determined by total_contributions count.
+			 * 
+			 * @param {PlayerData} player1 - First player's data
+			 * @param {PlayerData} player2 - Second player's data
+			 * 
+			 * @example
+			 * displayResults(player1Data, player2Data);
+			 * // Renders HTML with both players' info, graphs, and winner announcement
+			 */
 			function displayResults(player1: PlayerData, player2: PlayerData) {
 				const isPlayer1Winner = player1.totalContributions > player2.totalContributions;
 				const isPlayer2Winner = player2.totalContributions > player1.totalContributions;
@@ -736,6 +853,37 @@
 				resultsDiv.classList.add('show');
 			}
 
+			/**
+			 * Main battle orchestration function. Handles the complete battle flow:
+			 * 1. Validates both input fields are filled
+			 * 2. Shows loading state
+			 * 3. Fetches both users' data in parallel
+			 * 4. Calculates statistics (totals, date ranges)
+			 * 5. Renders comparison results with winner determination
+			 * 6. Handles errors and cleans up loading state
+			 * 
+			 * Called when:
+			 * - Battle button is clicked
+			 * - Enter key is pressed in either input field
+			 * 
+			 * @async
+			 * @returns {Promise<void>}
+			 * 
+			 * Flow visualization:
+			 * Validate inputs
+			 *   ↓
+			 * Show loading + disable button
+			 *   ↓
+			 * Fetch data in parallel (Promise.all)
+			 *   ↓
+			 * Validate responses
+			 *   ↓
+			 * Calculate stats (totals, dates)
+			 *   ↓
+			 * Display results + determine winner
+			 *   ↓
+			 * Hide loading + enable button
+			 */
 			async function handleBattle() {
 				const username1 = player1Input.value.trim();
 				const username2 = player2Input.value.trim();
