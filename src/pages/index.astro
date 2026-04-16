@@ -46,6 +46,7 @@
 				<div class="button-group">
 					<button id="battleBtn" type="button">⚔️ BATTLE!</button>
 					<button id="clearBtn" type="button" class="clear-btn">🗑️ CLEAR</button>
+					<button id="muteBtn" type="button" class="mute-btn" title="Toggle sound">🔊 SOUND</button>
 				</div>
 			</div>
 
@@ -344,6 +345,43 @@
 
 			.clear-btn:active:not(:disabled) {
 				transform: scale(0.95);
+			}
+
+			.mute-btn {
+				background: rgba(10, 10, 26, 0.9);
+				color: #5fed83;
+				border: 3px solid #5fed83;
+				text-shadow: 0 0 5px #5fed83;
+				box-shadow: 
+					0 0 15px rgba(95, 237, 131, 0.4),
+					inset 0 0 20px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s;
+				flex: 0 1 auto;
+				font-size: 0.65rem;
+			}
+
+			.mute-btn:hover:not(:disabled) {
+				transform: scale(1.05);
+				box-shadow: 
+					0 0 30px rgba(95, 237, 131, 0.7),
+					inset 0 0 20px rgba(95, 237, 131, 0.2);
+				text-shadow: 
+					0 0 5px #5fed83,
+					0 0 10px #5fed83,
+					0 0 20px #5fed83;
+			}
+
+			.mute-btn:active:not(:disabled) {
+				transform: scale(0.95);
+			}
+
+			.mute-btn.muted {
+				color: #ff6b6b;
+				border-color: #ff6b6b;
+				text-shadow: 0 0 5px #ff6b6b;
+				box-shadow: 
+					0 0 15px rgba(255, 107, 107, 0.4),
+					inset 0 0 20px rgba(0, 0, 0, 0.5);
 			}
 
 			.error {
@@ -1094,6 +1132,7 @@
 			const player2Input = document.getElementById('player2') as HTMLInputElement;
 			const battleBtn = document.getElementById('battleBtn') as HTMLButtonElement;
 			const clearBtn = document.getElementById('clearBtn') as HTMLButtonElement;
+			const muteBtn = document.getElementById('muteBtn') as HTMLButtonElement;
 			const errorDiv = document.getElementById('error') as HTMLDivElement;
 			const loadingDiv = document.getElementById('loading') as HTMLDivElement;
 			const resultsDiv = document.getElementById('results') as HTMLDivElement;
@@ -1101,6 +1140,164 @@
 			// LocalStorage keys for saving usernames
 			const STORAGE_KEY_PLAYER1 = 'mona-mayhem-player1';
 			const STORAGE_KEY_PLAYER2 = 'mona-mayhem-player2';
+			const STORAGE_KEY_SOUND = 'mona-mayhem-sound-enabled';
+
+			/**
+			 * Web Audio API Sound Manager
+			 * Generates retro arcade sounds using oscillators and gain nodes
+			 */
+			class SoundManager {
+				private audioContext: AudioContext | null = null;
+				private isMuted: boolean = false;
+
+				constructor() {
+					this.isMuted = localStorage.getItem(STORAGE_KEY_SOUND) === 'false';
+					this.updateMuteButton();
+				}
+
+				private getAudioContext(): AudioContext {
+					if (!this.audioContext) {
+						this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+					}
+					return this.audioContext;
+				}
+
+				/**
+				 * Plays a coin insert sound (classic arcade)
+				 * Two ascending tones mimicking a coin drop
+				 */
+				playCoin() {
+					if (this.isMuted) return;
+					const ctx = this.getAudioContext();
+					const now = ctx.currentTime;
+
+					// First tone (higher)
+					const osc1 = ctx.createOscillator();
+					const gain1 = ctx.createGain();
+					osc1.connect(gain1);
+					gain1.connect(ctx.destination);
+					osc1.frequency.value = 1000;
+					osc1.type = 'sine';
+					gain1.gain.setValueAtTime(0.3, now);
+					gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+					osc1.start(now);
+					osc1.stop(now + 0.1);
+
+					// Second tone (lower)
+					const osc2 = ctx.createOscillator();
+					const gain2 = ctx.createGain();
+					osc2.connect(gain2);
+					gain2.connect(ctx.destination);
+					osc2.frequency.value = 800;
+					osc2.type = 'sine';
+					gain2.gain.setValueAtTime(0.3, now + 0.15);
+					gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+					osc2.start(now + 0.15);
+					osc2.stop(now + 0.25);
+				}
+
+				/**
+				 * Plays a power-up sound (classic video game power-up)
+				 * Rising pitch with harmonic overtones
+				 */
+				playPowerUp() {
+					if (this.isMuted) return;
+					const ctx = this.getAudioContext();
+					const now = ctx.currentTime;
+
+					// Main oscillator - rising pitch
+					const osc = ctx.createOscillator();
+					const gain = ctx.createGain();
+					osc.connect(gain);
+					gain.connect(ctx.destination);
+					osc.type = 'square';
+					osc.frequency.setValueAtTime(400, now);
+					osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+					osc.frequency.exponentialRampToValueAtTime(1200, now + 0.2);
+					gain.gain.setValueAtTime(0.2, now);
+					gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+					osc.start(now);
+					osc.stop(now + 0.2);
+
+					// Harmonic overtone for richness
+					const osc2 = ctx.createOscillator();
+					const gain2 = ctx.createGain();
+					osc2.connect(gain2);
+					gain2.connect(ctx.destination);
+					osc2.type = 'sine';
+					osc2.frequency.setValueAtTime(1200, now);
+					osc2.frequency.exponentialRampToValueAtTime(2400, now + 0.1);
+					osc2.frequency.exponentialRampToValueAtTime(3600, now + 0.2);
+					gain2.gain.setValueAtTime(0.1, now);
+					gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+					osc2.start(now);
+					osc2.stop(now + 0.2);
+				}
+
+				/**
+				 * Plays an explosion sound (error notification)
+				 * Sharp burst with frequency drop and noise
+				 */
+				playExplosion() {
+					if (this.isMuted) return;
+					const ctx = this.getAudioContext();
+					const now = ctx.currentTime;
+
+					// Create noise buffer for explosion effect
+					const bufferSize = ctx.sampleRate * 0.2;
+					const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+					const output = noiseBuffer.getChannelData(0);
+					for (let i = 0; i < bufferSize; i++) {
+						output[i] = Math.random() * 2 - 1;
+					}
+					const noiseSource = ctx.createBufferSource();
+					noiseSource.buffer = noiseBuffer;
+					const noiseGain = ctx.createGain();
+					noiseSource.connect(noiseGain);
+					noiseGain.connect(ctx.destination);
+					noiseGain.gain.setValueAtTime(0.3, now);
+					noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+					noiseSource.start(now);
+
+					// Explosion tone (pitch drop)
+					const osc = ctx.createOscillator();
+					const oscGain = ctx.createGain();
+					osc.connect(oscGain);
+					oscGain.connect(ctx.destination);
+					osc.type = 'sine';
+					osc.frequency.setValueAtTime(150, now);
+					osc.frequency.exponentialRampToValueAtTime(50, now + 0.1);
+					osc.frequency.exponentialRampToValueAtTime(20, now + 0.2);
+					oscGain.gain.setValueAtTime(0.2, now);
+					oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+					osc.start(now);
+					osc.stop(now + 0.2);
+				}
+
+				/**
+				 * Toggle mute state
+				 */
+				toggleMute() {
+					this.isMuted = !this.isMuted;
+					localStorage.setItem(STORAGE_KEY_SOUND, this.isMuted ? 'false' : 'true');
+					this.updateMuteButton();
+				}
+
+				/**
+				 * Update mute button appearance
+				 */
+				private updateMuteButton() {
+					if (this.isMuted) {
+						muteBtn.classList.add('muted');
+						muteBtn.textContent = '🔇 MUTED';
+					} else {
+						muteBtn.classList.remove('muted');
+						muteBtn.textContent = '🔊 SOUND';
+					}
+				}
+			}
+
+			const soundManager = new SoundManager();
 
 			/**
 			 * Represents a single day's contribution data in GitHub's contribution graph.
@@ -1202,6 +1399,7 @@
 			function showError(message) {
 				errorDiv.textContent = message;
 				errorDiv.classList.add('show');
+				soundManager.playExplosion();
 			}
 
 			function hideError() {
@@ -1520,6 +1718,7 @@
 				`;
 
 				resultsDiv.classList.add('show');
+				soundManager.playPowerUp();
 
 				// Play battle animation
 				const winner = isPlayer1Winner ? player1 : player2;
@@ -1567,6 +1766,7 @@
 
 				hideError();
 				hideResults();
+				soundManager.playCoin();
 
 				// Validate inputs
 				if (!username1 || !username2) {
@@ -1634,6 +1834,11 @@
 				localStorage.removeItem(STORAGE_KEY_PLAYER2);
 				hideError();
 				hideResults();
+			});
+
+			// Mute button functionality
+			muteBtn.addEventListener('click', () => {
+				soundManager.toggleMute();
 			});
 
 			// Save usernames to localStorage when they change
