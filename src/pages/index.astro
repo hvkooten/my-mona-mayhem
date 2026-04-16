@@ -15,6 +15,11 @@
 	</head>
 	<body>
 		<main>
+			<div class="top-controls">
+				<button id="themeBtn" type="button" class="theme-btn" title="Toggle color theme">🎨</button>
+				<button id="muteBtn" type="button" class="mute-btn" title="Toggle sound">🔊</button>
+			</div>
+
 			<h1>🎮 Mona Mayhem</h1>
 			<p class="subtitle">GitHub Contribution Battle Arena</p>
 
@@ -42,13 +47,11 @@
 						autocomplete="off"
 					/>
 				</div>
+			</div>
 
-				<div class="button-group">
-					<button id="battleBtn" type="button">⚔️ BATTLE!</button>
-					<button id="clearBtn" type="button" class="clear-btn">🗑️ CLEAR</button>
-					<button id="themeBtn" type="button" class="theme-btn" title="Toggle color theme">🎨 THEME</button>
-					<button id="muteBtn" type="button" class="mute-btn" title="Toggle sound">🔊 SOUND</button>
-				</div>
+			<div class="button-group">
+				<button id="battleBtn" type="button">⚔️ BATTLE!</button>
+				<button id="clearBtn" type="button" class="clear-btn">🗑️ CLEAR</button>
 			</div>
 
 			<div id="error" class="error" role="alert"></div>
@@ -157,6 +160,16 @@
 				max-width: 1100px;
 				width: 100%;
 				position: relative;
+				padding-top: 80px;
+			}
+
+			.top-controls {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+				display: flex;
+				gap: 10px;
+				z-index: 100;
 			}
 
 			h1 {
@@ -207,8 +220,12 @@
 
 			.battle-form {
 				display: flex;
-				flex-direction: column;
+				flex-direction: row;
 				gap: 30px;
+				justify-content: center;
+				align-items: flex-start;
+				flex-wrap: nowrap;
+				margin-bottom: 30px;
 			}
 
 			.input-group {
@@ -217,6 +234,272 @@
 				gap: 12px;
 				opacity: 0;
 				animation: floatIn 0.8s ease-out forwards;
+				flex: 0 1 350px;
+				padding: 25px;
+				border: 3px solid var(--color-primary);
+				background: rgba(10, 10, 26, 0.9);
+				box-shadow: 0 0 20px var(--color-glow-primary);
+			}
+
+			.input-group:first-child {
+				animation-delay: 0.2s;
+			}
+
+			.input-group:nth-child(3) {
+				animation-delay: 0.4s;
+			}
+
+			@keyframes floatIn {
+				from {
+					opacity: 0;
+					transform: translateY(30px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			label {
+				font-weight: 600;
+				color: var(--color-primary);
+				font-size: 0.7rem;
+				text-transform: uppercase;
+				letter-spacing: 2px;
+				text-shadow: 0 0 10px var(--color-primary);
+			}
+
+			input {
+				padding: 16px;
+				background: rgba(10, 10, 26, 0.8);
+				border: 2px solid var(--color-primary);
+				color: var(--color-primary);
+				font-size: 0.8rem;
+				font-family: 'Press Start 2P', cursive;
+				transition: all 0.3s;
+				box-shadow: 0 0 10px rgba(95, 237, 131, 0.3);
+				text-shadow: 0 0 5px var(--color-primary);
+			}
+
+			input::placeholder {
+				color: rgba(95, 237, 131, 0.5);
+			}
+
+			input:focus {
+				outline: none;
+				border-color: var(--color-secondary);
+				box-shadow: 
+					0 0 15px rgba(138, 43, 226, 0.6),
+					inset 0 0 10px rgba(138, 43, 226, 0.2);
+				color: var(--color-secondary);
+				text-shadow: 0 0 5px var(--color-secondary);
+			}
+
+			.vs {
+				text-align: center;
+				font-weight: bold;
+				font-size: 2rem;
+				padding: 20px;
+				background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary));
+				background-size: 200% 100%;
+				-webkit-background-clip: text;
+				background-clip: text;
+				-webkit-text-fill-color: transparent;
+				animation: gradientShift 3s ease infinite;
+				text-shadow: none;
+				position: relative;
+				letter-spacing: 4px;
+				flex: 0 0 auto;
+				align-self: center;
+				min-width: 60px;
+			}
+
+			.vs::before {
+				content: 'VS';
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				-webkit-text-fill-color: rgba(95, 237, 131, 0.3);
+				filter: blur(10px);
+				z-index: -1;
+			}
+
+			@keyframes gradientShift {
+				0%, 100% {
+					background-position: 0% 50%;
+				}
+				50% {
+					background-position: 100% 50%;
+				}
+			}
+
+			button {
+				background: rgba(10, 10, 26, 0.9);
+				color: var(--color-primary);
+				border: 3px solid var(--color-primary);
+				padding: 20px 40px;
+				font-size: 1rem;
+				font-weight: bold;
+				font-family: 'Press Start 2P', cursive;
+				cursor: pointer;
+				transition: all 0.3s;
+				box-shadow: 
+					0 0 15px var(--color-glow-primary),
+					inset 0 0 20px rgba(0, 0, 0, 0.5);
+				text-shadow: 0 0 5px var(--color-primary);
+				letter-spacing: 2px;
+			}
+
+			button:hover:not(:disabled) {
+				transform: scale(1.05);
+				box-shadow: 
+					0 0 30px rgba(95, 237, 131, 0.8),
+					inset 0 0 20px var(--color-primary);
+				text-shadow: 
+					0 0 5px var(--color-primary),
+					0 0 10px var(--color-primary),
+					0 0 20px var(--color-primary);
+			}
+
+			button:active:not(:disabled) {
+				transform: scale(0.95);
+			}
+
+			button:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+
+			.button-group {
+				display: flex;
+				gap: 15px;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+
+			.clear-btn {
+				background: rgba(10, 10, 26, 0.9);
+				color: #ff6b6b;
+				border: 3px solid #ff6b6b;
+				text-shadow: 0 0 5px #ff6b6b;
+				box-shadow: 
+					0 0 15px rgba(255, 107, 107, 0.4),
+					inset 0 0 20px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s;
+				flex: 0 1 auto;
+			}
+
+			.clear-btn:hover:not(:disabled) {
+				transform: scale(1.05);
+				box-shadow: 
+					0 0 30px rgba(255, 107, 107, 0.7),
+					inset 0 0 20px rgba(255, 107, 107, 0.2);
+				text-shadow: 
+					0 0 5px #ff6b6b,
+					0 0 10px #ff6b6b,
+					0 0 20px #ff6b6b;
+			}
+
+			.clear-btn:active:not(:disabled) {
+				transform: scale(0.95);
+			}
+
+			.theme-btn {
+				background: rgba(10, 10, 26, 0.7);
+				color: var(--color-secondary);
+				border: 2px solid var(--color-secondary);
+				text-shadow: 0 0 5px var(--color-secondary);
+				box-shadow: 
+					0 0 10px rgba(138, 43, 226, 0.3),
+					inset 0 0 10px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s;
+				flex: 0 1 auto;
+				font-size: 0.6rem;
+				padding: 10px 15px;
+				margin: 0;
+			}
+
+			.theme-btn:hover:not(:disabled) {
+				transform: scale(1.05);
+				box-shadow: 
+					0 0 20px var(--color-secondary),
+					inset 0 0 10px var(--color-secondary);
+				text-shadow: 
+					0 0 5px var(--color-secondary),
+					0 0 10px var(--color-secondary);
+			}
+
+			.theme-btn:active:not(:disabled) {
+				transform: scale(0.95);
+			}
+
+			.mute-btn {
+				background: rgba(10, 10, 26, 0.7);
+				color: var(--color-primary);
+				border: 2px solid var(--color-primary);
+				text-shadow: 0 0 5px var(--color-primary);
+				box-shadow: 
+					0 0 10px rgba(95, 237, 131, 0.3),
+					inset 0 0 10px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s;
+				flex: 0 1 auto;
+				font-size: 0.6rem;
+				padding: 10px 15px;
+				margin: 0;
+			}
+
+			.mute-btn:hover:not(:disabled) {
+				transform: scale(1.05);
+				box-shadow: 
+					0 0 20px rgba(95, 237, 131, 0.7),
+					inset 0 0 10px var(--color-primary);
+				text-shadow: 
+					0 0 5px var(--color-primary),
+					0 0 10px var(--color-primary);
+			}
+
+			.mute-btn:active:not(:disabled) {
+				transform: scale(0.95);
+			}
+
+			.mute-btn.muted {
+				color: #ff6b6b;
+				border-color: #ff6b6b;
+				text-shadow: 0 0 5px #ff6b6b;
+				box-shadow: 
+					0 0 10px rgba(255, 107, 107, 0.4),
+					inset 0 0 10px rgba(0, 0, 0, 0.5);
+			}
+				text-transform: uppercase;
+				letter-spacing: 2px;
+				text-shadow:
+					0 0 5px var(--color-secondary),
+					0 0 10px var(--color-secondary);
+			}
+
+			.battle-form {
+				display: flex;
+				flex-direction: row;
+				gap: 30px;
+				flex-wrap: wrap;
+				justify-content: center;
+				align-items: flex-start;
+			}
+
+			.input-group {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				opacity: 0;
+				animation: floatIn 0.8s ease-out forwards;
+				flex: 1;
+				min-width: 250px;
+				max-width: 350px;
+				padding: 25px;
+				border: 3px solid var(--color-primary);
+				background: rgba(10, 10, 26, 0.9);
+				box-shadow: 0 0 20px var(--color-glow-primary);
 			}
 
 			.input-group:first-child {
@@ -244,30 +527,33 @@
 				font-size: 0.7rem;
 				text-transform: uppercase;
 				letter-spacing: 2px;
-				text-shadow: 0 0 5px var(--color-primary);
+				text-shadow: 0 0 10px var(--color-primary);
 			}
 
 			input {
 				padding: 16px;
 				background: rgba(10, 10, 26, 0.8);
 				border: 2px solid var(--color-primary);
-				color: #e0e0e0;
+				color: var(--color-primary);
 				font-size: 0.8rem;
 				font-family: 'Press Start 2P', cursive;
 				transition: all 0.3s;
 				box-shadow: 0 0 10px rgba(95, 237, 131, 0.3);
+				text-shadow: 0 0 5px var(--color-primary);
 			}
 
 			input::placeholder {
-				color: rgba(224, 224, 224, 0.4);
+				color: rgba(95, 237, 131, 0.5);
 			}
 
 			input:focus {
 				outline: none;
 				border-color: var(--color-secondary);
 				box-shadow: 
-					0 0 15px rgba(255, 107, 53, 0.6),
-					inset 0 0 10px rgba(255, 107, 53, 0.2);
+					0 0 15px rgba(138, 43, 226, 0.6),
+					inset 0 0 10px rgba(138, 43, 226, 0.2);
+				color: var(--color-secondary);
+				text-shadow: 0 0 5px var(--color-secondary);
 			}
 
 			.vs {
@@ -284,6 +570,9 @@
 				text-shadow: none;
 				position: relative;
 				letter-spacing: 4px;
+				flex: 0 0 auto;
+				align-self: center;
+				min-width: 60px;
 			}
 
 			.vs::before {
@@ -350,6 +639,7 @@
 				justify-content: center;
 				margin-top: 20px;
 				flex-wrap: wrap;
+				flex: 0 0 100%;
 			}
 
 			.clear-btn {
@@ -687,6 +977,28 @@
 				animation: nameGlow 1.5s ease-in-out infinite;
 			}
 
+			.player-info-box .player-name {
+				color: var(--color-primary);
+				font-size: 0.85rem;
+				font-weight: bold;
+				text-shadow: 0 0 10px var(--color-primary);
+			}
+
+			.player-info-box.winner .player-name {
+				color: var(--color-secondary);
+				text-shadow: 0 0 10px var(--color-secondary);
+			}
+
+			.player-info-box .player-stats {
+				color: var(--color-primary);
+				text-shadow: 0 0 5px var(--color-primary);
+			}
+
+			.player-info-box.winner .player-stats {
+				color: var(--color-secondary);
+				text-shadow: 0 0 5px var(--color-secondary);
+			}
+
 			@keyframes playerNameGlow {
 				0%, 100% {
 					text-shadow: 
@@ -749,6 +1061,7 @@
 				justify-content: space-between;
 				margin-bottom: 4px;
 				gap: 8px;
+				color: var(--color-primary);
 			}
 
 			.stat-label {
@@ -761,33 +1074,29 @@
 				letter-spacing: 0.5px;
 			}
 
-			.player-result.winner .stat-label {
-				color: #ffaa55;
-				text-shadow: 
-					0 0 8px rgba(255, 170, 85, 0.8),
-					0 0 15px rgba(255, 107, 53, 0.6);
+			.player-info-box .stat-label {
+				color: var(--color-primary);
+				text-shadow: 0 0 8px var(--color-primary);
+				font-weight: 700;
+				flex: 0 0 auto;
 			}
 
-			.stat-value {
-				color: var(--color-secondary);
+			.player-info-box .stat-value {
+				color: var(--color-primary);
+				text-shadow: 0 0 8px var(--color-primary);
 				font-weight: 700;
-				text-shadow: 
-					0 0 8px var(--color-secondary),
-					0 0 15px rgba(138, 43, 226, 0.6),
-					0 0 25px rgba(138, 43, 226, 0.3);
-				animation: valueGlow 1.5s ease-in-out infinite;
 				flex: 1;
 				text-align: right;
-				color: #00ff00;
 			}
 
-			.player-result.winner .stat-value {
-				color: #ff00ff;
-				text-shadow: 
-					0 0 8px #ff00ff,
-					0 0 15px rgba(255, 107, 53, 0.8),
-					0 0 25px rgba(255, 0, 255, 0.5);
-				animation: winnerValueGlow 1s ease-in-out infinite;
+			.player-info-box.winner .stat-label {
+				color: var(--color-secondary);
+				text-shadow: 0 0 8px var(--color-secondary);
+			}
+
+			.player-info-box.winner .stat-value {
+				color: var(--color-secondary);
+				text-shadow: 0 0 8px var(--color-secondary);
 			}
 
 			@keyframes valueGlow {
@@ -1325,8 +1634,26 @@
 			.info-section {
 				display: grid;
 				grid-template-columns: 1fr 1fr;
-				gap: 20px;
+				gap: 30px;
 				width: 100%;
+				margin: 30px 0;
+			}
+
+			.player-info-box {
+				background: rgba(10, 10, 26, 0.9);
+				border: 3px solid var(--color-primary);
+				padding: 20px;
+				border-radius: 4px;
+				box-shadow: 
+					0 0 20px var(--color-glow-primary),
+					inset 0 0 20px rgba(95, 237, 131, 0.05);
+				transition: all 0.4s ease;
+				animation: slideIn 0.6s ease-out;
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				color: var(--color-primary);
+				min-width: 0;
 			}
 
 			/* Avatar Boxes */
@@ -1343,22 +1670,6 @@
 				min-height: 120px;
 				width: 100%;
 				overflow: hidden;
-			}
-
-			/* Info Boxes */
-			.player-info-box {
-				background: rgba(95, 237, 131, 0.1);
-				border: 2px solid var(--color-primary);
-				padding: 18px;
-				border-radius: 4px;
-				box-shadow: 
-					0 0 20px var(--color-glow-primary),
-					inset 0 0 20px rgba(95, 237, 131, 0.05);
-				transition: all 0.4s ease;
-				animation: slideIn 0.6s ease-out;
-				display: flex;
-				flex-direction: column;
-				gap: 12px;
 			}
 
 			.player-info-box.winner {
@@ -2041,7 +2352,7 @@
 					player2NameDiv.classList.add('show');
 				}, 100);
 
-				// After 5 seconds, start Pac-Man sequence
+				// After 1 second, start Pac-Man sequence
 				setTimeout(() => {
 					// Position Pac-Man
 					const loserRect = player1NameDiv.getBoundingClientRect();
@@ -2083,7 +2394,7 @@
 							}, 800);
 						}
 					}, 30);
-				}, 5000);
+				}, 1000);
 			}
 
 			/**
@@ -2165,8 +2476,8 @@
 					getGitHubAvatar(player1.username),
 					getGitHubAvatar(player2.username)
 				]).then(([avatar1, avatar2]) => {
-					const avatar1Html = avatar1 ? `<img src="${avatar1}" alt="${player1.username}" class="player-avatar" onerror="this.style.display='none'" />` : '';
-					const avatar2Html = avatar2 ? `<img src="${avatar2}" alt="${player2.username}" class="player-avatar" onerror="this.style.display='none'" />` : '';
+					const avatar1Html = avatar1 ? `<img src="${avatar1}" alt="${player1.username}" class="player-avatar" style="width: 60px; height: 60px; max-width: 60px; max-height: 60px; min-width: 60px; min-height: 60px;" onerror="this.style.display='none'" />` : '';
+					const avatar2Html = avatar2 ? `<img src="${avatar2}" alt="${player2.username}" class="player-avatar" style="width: 60px; height: 60px; max-width: 60px; max-height: 60px; min-width: 60px; min-height: 60px;" onerror="this.style.display='none'" />` : '';
 
 					resultsDiv.innerHTML = `
 						<div class="results-container">
