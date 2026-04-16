@@ -46,6 +46,7 @@
 				<div class="button-group">
 					<button id="battleBtn" type="button">⚔️ BATTLE!</button>
 					<button id="clearBtn" type="button" class="clear-btn">🗑️ CLEAR</button>
+					<button id="themeBtn" type="button" class="theme-btn" title="Toggle color theme">🎨 THEME</button>
 					<button id="muteBtn" type="button" class="mute-btn" title="Toggle sound">🔊 SOUND</button>
 				</div>
 			</div>
@@ -68,6 +69,30 @@
 		</div>
 
 		<style>
+			:root {
+				/* Default theme: Green & Purple */
+				--color-primary: #5fed83;
+				--color-secondary: #8a2be2;
+				--color-accent: #ff00ff;
+				--color-light-accent: #a0f0ff;
+				--color-background: #0a0a1a;
+				--color-border: rgba(95, 237, 131, 0.2);
+				--color-glow-primary: rgba(95, 237, 131, 0.5);
+				--color-glow-secondary: rgba(138, 43, 226, 0.8);
+			}
+
+			:root.theme-blue-orange {
+				/* Alternative theme: Blue & Orange */
+				--color-primary: #00f5ff;
+				--color-secondary: #ff6b35;
+				--color-accent: #ff00ff;
+				--color-light-accent: #ffaa55;
+				--color-background: #0a0a1a;
+				--color-border: rgba(0, 245, 255, 0.2);
+				--color-glow-primary: rgba(0, 245, 255, 0.5);
+				--color-glow-secondary: rgba(255, 107, 53, 0.8);
+			}
+
 			* {
 				margin: 0;
 				padding: 0;
@@ -76,7 +101,7 @@
 
 			body {
 				font-family: 'Press Start 2P', cursive;
-				background: #0a0a1a;
+				background: var(--color-background);
 				min-height: 100vh;
 				display: flex;
 				align-items: center;
@@ -117,9 +142,9 @@
 
 			main {
 				background: rgba(10, 10, 26, 0.85);
-				border: 3px solid #5fed83;
+				border: 3px solid var(--color-primary);
 				box-shadow: 
-					0 0 20px rgba(95, 237, 131, 0.5),
+					0 0 20px var(--color-glow-primary),
 					inset 0 0 30px rgba(0, 0, 0, 0.5);
 				padding: 40px;
 				max-width: 700px;
@@ -129,15 +154,15 @@
 
 			h1 {
 				text-align: center;
-				color: #5fed83;
+				color: var(--color-primary);
 				font-size: 2rem;
 				margin-bottom: 10px;
 				text-shadow:
-					0 0 5px #5fed83,
-					0 0 10px #5fed83,
-					0 0 20px #5fed83,
-					0 0 40px #5fed83,
-					0 0 80px #5fed83;
+					0 0 5px var(--color-primary),
+					0 0 10px var(--color-primary),
+					0 0 20px var(--color-primary),
+					0 0 40px var(--color-primary),
+					0 0 80px var(--color-primary);
 				animation: neonPulse 2s ease-in-out infinite;
 				letter-spacing: 2px;
 			}
@@ -145,32 +170,32 @@
 			@keyframes neonPulse {
 				0%, 100% {
 					text-shadow:
-						0 0 5px #5fed83,
-						0 0 10px #5fed83,
-						0 0 20px #5fed83,
-						0 0 40px #5fed83,
-						0 0 80px #5fed83;
+						0 0 5px var(--color-primary),
+						0 0 10px var(--color-primary),
+						0 0 20px var(--color-primary),
+						0 0 40px var(--color-primary),
+						0 0 80px var(--color-primary);
 				}
 				50% {
 					text-shadow:
-						0 0 2px #5fed83,
-						0 0 5px #5fed83,
-						0 0 10px #5fed83,
-						0 0 20px #5fed83,
-						0 0 40px #5fed83;
+						0 0 2px var(--color-primary),
+						0 0 5px var(--color-primary),
+						0 0 10px var(--color-primary),
+						0 0 20px var(--color-primary),
+						0 0 40px var(--color-primary);
 				}
 			}
 
 			.subtitle {
 				text-align: center;
-				color: #8a2be2;
+				color: var(--color-secondary);
 				margin-bottom: 40px;
 				font-size: 0.7rem;
 				text-transform: uppercase;
 				letter-spacing: 2px;
 				text-shadow:
-					0 0 5px #8a2be2,
-					0 0 10px #8a2be2;
+					0 0 5px var(--color-secondary),
+					0 0 10px var(--color-secondary);
 			}
 
 			.battle-form {
@@ -208,17 +233,17 @@
 
 			label {
 				font-weight: 600;
-				color: #5fed83;
+				color: var(--color-primary);
 				font-size: 0.7rem;
 				text-transform: uppercase;
 				letter-spacing: 2px;
-				text-shadow: 0 0 5px #5fed83;
+				text-shadow: 0 0 5px var(--color-primary);
 			}
 
 			input {
 				padding: 16px;
 				background: rgba(10, 10, 26, 0.8);
-				border: 2px solid #5fed83;
+				border: 2px solid var(--color-primary);
 				color: #e0e0e0;
 				font-size: 0.8rem;
 				font-family: 'Press Start 2P', cursive;
@@ -232,10 +257,10 @@
 
 			input:focus {
 				outline: none;
-				border-color: #8a2be2;
+				border-color: var(--color-secondary);
 				box-shadow: 
-					0 0 15px rgba(138, 43, 226, 0.6),
-					inset 0 0 10px rgba(138, 43, 226, 0.2);
+					0 0 15px rgba(255, 107, 53, 0.6),
+					inset 0 0 10px rgba(255, 107, 53, 0.2);
 			}
 
 			.vs {
@@ -243,7 +268,7 @@
 				font-weight: bold;
 				font-size: 2rem;
 				padding: 20px;
-				background: linear-gradient(90deg, #5fed83, #8a2be2, #5fed83);
+				background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary));
 				background-size: 200% 100%;
 				-webkit-background-clip: text;
 				background-clip: text;
@@ -276,8 +301,8 @@
 
 			button {
 				background: rgba(10, 10, 26, 0.9);
-				color: #5fed83;
-				border: 3px solid #5fed83;
+				color: var(--color-primary);
+				border: 3px solid var(--color-primary);
 				padding: 20px 40px;
 				font-size: 1rem;
 				font-weight: bold;
@@ -286,9 +311,9 @@
 				transition: all 0.3s;
 				margin-top: 20px;
 				box-shadow: 
-					0 0 15px rgba(95, 237, 131, 0.5),
+					0 0 15px var(--color-glow-primary),
 					inset 0 0 20px rgba(0, 0, 0, 0.5);
-				text-shadow: 0 0 5px #5fed83;
+				text-shadow: 0 0 5px var(--color-primary);
 				letter-spacing: 2px;
 			}
 
@@ -296,11 +321,11 @@
 				transform: scale(1.05);
 				box-shadow: 
 					0 0 30px rgba(95, 237, 131, 0.8),
-					inset 0 0 20px rgba(95, 237, 131, 0.2);
+					inset 0 0 20px var(--color-primary);
 				text-shadow: 
-					0 0 5px #5fed83,
-					0 0 10px #5fed83,
-					0 0 20px #5fed83;
+					0 0 5px var(--color-primary),
+					0 0 10px var(--color-primary),
+					0 0 20px var(--color-primary);
 			}
 
 			button:active:not(:disabled) {
@@ -347,11 +372,39 @@
 				transform: scale(0.95);
 			}
 
+			.theme-btn {
+				background: rgba(10, 10, 26, 0.9);
+				color: var(--color-secondary);
+				border: 3px solid var(--color-secondary);
+				text-shadow: 0 0 5px var(--color-secondary);
+				box-shadow: 
+					0 0 15px rgba(255, 107, 53, 0.4),
+					inset 0 0 20px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s;
+				flex: 0 1 auto;
+				font-size: 0.65rem;
+			}
+
+			.theme-btn:hover:not(:disabled) {
+				transform: scale(1.05);
+				box-shadow: 
+					0 0 30px var(--color-secondary),
+					inset 0 0 20px var(--color-secondary);
+				text-shadow: 
+					0 0 5px var(--color-secondary),
+					0 0 10px var(--color-secondary),
+					0 0 20px var(--color-secondary);
+			}
+
+			.theme-btn:active:not(:disabled) {
+				transform: scale(0.95);
+			}
+
 			.mute-btn {
 				background: rgba(10, 10, 26, 0.9);
-				color: #5fed83;
-				border: 3px solid #5fed83;
-				text-shadow: 0 0 5px #5fed83;
+				color: var(--color-primary);
+				border: 3px solid var(--color-primary);
+				text-shadow: 0 0 5px var(--color-primary);
 				box-shadow: 
 					0 0 15px rgba(95, 237, 131, 0.4),
 					inset 0 0 20px rgba(0, 0, 0, 0.5);
@@ -364,11 +417,11 @@
 				transform: scale(1.05);
 				box-shadow: 
 					0 0 30px rgba(95, 237, 131, 0.7),
-					inset 0 0 20px rgba(95, 237, 131, 0.2);
+					inset 0 0 20px var(--color-primary);
 				text-shadow: 
-					0 0 5px #5fed83,
-					0 0 10px #5fed83,
-					0 0 20px #5fed83;
+					0 0 5px var(--color-primary),
+					0 0 10px var(--color-primary),
+					0 0 20px var(--color-primary);
 			}
 
 			.mute-btn:active:not(:disabled) {
@@ -405,7 +458,7 @@
 				text-align: center;
 				margin-top: 30px;
 				font-size: 1rem;
-				color: #5fed83;
+				color: var(--color-primary);
 				animation: colorShift 2s ease-in-out infinite;
 				text-shadow: 0 0 10px currentColor;
 			}
@@ -416,10 +469,10 @@
 
 			@keyframes colorShift {
 				0%, 100% {
-					color: #5fed83;
+					color: var(--color-primary);
 				}
 				50% {
-					color: #8a2be2;
+					color: var(--color-secondary);
 				}
 			}
 
@@ -454,10 +507,10 @@
 			.player-result {
 				background: rgba(10, 10, 26, 0.6);
 				padding: 20px;
-				border: 2px solid #5fed83;
+				border: 2px solid var(--color-primary);
 				position: relative;
 				overflow: hidden;
-				box-shadow: 0 0 15px rgba(95, 237, 131, 0.3);
+				box-shadow: 0 0 15px var(--color-glow-primary);
 				transition: all 0.4s ease;
 				animation: slideIn 0.6s ease-out;
 			}
@@ -516,12 +569,12 @@
 			}
 
 			.player-result.winner {
-				border-color: #8a2be2;
+				border-color: var(--color-secondary);
 				background: rgba(10, 10, 26, 0.9);
 				box-shadow: 
-					0 0 30px rgba(138, 43, 226, 0.8),
-					0 0 60px rgba(138, 43, 226, 0.4),
-					inset 0 0 20px rgba(138, 43, 226, 0.1);
+					0 0 30px var(--color-glow-secondary),
+					0 0 60px rgba(255, 107, 53, 0.4),
+					inset 0 0 20px rgba(255, 107, 53, 0.1);
 				animation: slideIn 0.6s ease-out, winnerGlow 2s ease-in-out infinite;
 				transform: scale(1.02);
 			}
@@ -529,15 +582,15 @@
 			@keyframes winnerGlow {
 				0%, 100% {
 					box-shadow: 
-						0 0 30px rgba(138, 43, 226, 0.8),
-						0 0 60px rgba(138, 43, 226, 0.4),
-						inset 0 0 20px rgba(138, 43, 226, 0.1);
+						0 0 30px var(--color-glow-secondary),
+						0 0 60px rgba(255, 107, 53, 0.4),
+						inset 0 0 20px rgba(255, 107, 53, 0.1);
 				}
 				50% {
 					box-shadow: 
-						0 0 50px rgba(138, 43, 226, 1),
-						0 0 100px rgba(138, 43, 226, 0.6),
-						inset 0 0 30px rgba(138, 43, 226, 0.2);
+						0 0 50px var(--color-secondary),
+						0 0 100px rgba(255, 107, 53, 0.6),
+						inset 0 0 30px rgba(255, 107, 53, 0.2);
 				}
 			}
 
@@ -569,9 +622,9 @@
 				font-size: 1rem;
 				font-weight: bold;
 				margin-bottom: 15px;
-				color: #5fed83;
+				color: var(--color-primary);
 				text-shadow: 
-					0 0 10px #5fed83,
+					0 0 10px var(--color-primary),
 					0 0 20px rgba(95, 237, 131, 0.6),
 					0 0 30px rgba(95, 237, 131, 0.3);
 				display: flex;
@@ -594,13 +647,13 @@
 			@keyframes playerNameGlow {
 				0%, 100% {
 					text-shadow: 
-						0 0 10px #5fed83,
+						0 0 10px var(--color-primary),
 						0 0 20px rgba(95, 237, 131, 0.6),
 						0 0 30px rgba(95, 237, 131, 0.3);
 				}
 				50% {
 					text-shadow: 
-						0 0 15px #5fed83,
+						0 0 15px var(--color-primary),
 						0 0 30px rgba(95, 237, 131, 0.8),
 						0 0 50px rgba(95, 237, 131, 0.5);
 				}
@@ -625,11 +678,11 @@
 
 			.player-stats {
 				font-size: 0.7rem;
-				color: #5fed83;
+				color: var(--color-primary);
 				margin-bottom: 16px;
 				background: rgba(0, 0, 0, 0.3);
 				padding: 12px;
-				border-left: 3px solid #5fed83;
+				border-left: 3px solid var(--color-primary);
 				animation: statsSlideIn 0.8s ease-out;
 			}
 
@@ -646,8 +699,8 @@
 
 			.player-result.winner .player-stats {
 				background: rgba(138, 43, 226, 0.15);
-				border-left-color: #8a2be2;
-				color: #a0f0ff;
+				border-left-color: var(--color-secondary);
+				color: var(--color-light-accent);
 				box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
 			}
 
@@ -659,20 +712,20 @@
 
 			.stat-label {
 				font-weight: 600;
-				color: #5fed83;
+				color: var(--color-primary);
 				text-shadow: 0 0 8px rgba(95, 237, 131, 0.6);
 			}
 
 			.player-result.winner .stat-label {
-				color: #a0f0ff;
+				color: var(--color-light-accent);
 				text-shadow: 0 0 8px rgba(160, 240, 255, 0.8);
 			}
 
 			.stat-value {
-				color: #8a2be2;
+				color: var(--color-secondary);
 				font-weight: bold;
 				text-shadow: 
-					0 0 8px #8a2be2,
+					0 0 8px var(--color-secondary),
 					0 0 15px rgba(138, 43, 226, 0.6);
 				animation: valueGlow 1.5s ease-in-out infinite;
 			}
@@ -710,7 +763,7 @@
 			.contribution-graph-label {
 				font-size: 0.7rem;
 				font-weight: 600;
-				color: #8a2be2;
+				color: var(--color-secondary);
 				margin-bottom: 10px;
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
@@ -720,12 +773,12 @@
 
 			@keyframes labelPulse {
 				0%, 100% {
-					color: #8a2be2;
-					text-shadow: 0 0 5px #8a2be2;
+					color: var(--color-secondary);
+					text-shadow: 0 0 5px var(--color-secondary);
 				}
 				50% {
-					color: #a0f0ff;
-					text-shadow: 0 0 10px #8a2be2;
+					color: var(--color-light-accent);
+					text-shadow: 0 0 10px var(--color-secondary);
 				}
 			}
 
@@ -736,7 +789,7 @@
 				padding: 15px;
 				background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(138, 43, 226, 0.1));
 				overflow-x: auto;
-				border: 1px solid rgba(95, 237, 131, 0.2);
+				border: 1px solid var(--color-border);
 				border-radius: 2px;
 				animation: gridFadeIn 0.8s ease-out;
 			}
@@ -754,16 +807,16 @@
 
 			@keyframes shimmerPlaceholder {
 				0%, 100% {
-					color: #5fed83;
+					color: var(--color-primary);
 					text-shadow: 
-						0 0 10px #5fed83,
+						0 0 10px var(--color-primary),
 						0 0 20px rgba(95, 237, 131, 0.6),
 						0 0 30px rgba(95, 237, 131, 0.3);
 				}
 				50% {
-					color: #a0f0ff;
+					color: var(--color-light-accent);
 					text-shadow: 
-						0 0 10px #a0f0ff,
+						0 0 10px var(--color-light-accent),
 						0 0 20px rgba(160, 240, 255, 0.6),
 						0 0 30px rgba(160, 240, 255, 0.3);
 				}
@@ -795,12 +848,12 @@
 			.grid-placeholder {
 				padding: 20px;
 				text-align: center;
-				color: #5fed83;
+				color: var(--color-primary);
 				background: rgba(0, 0, 0, 0.3);
 				font-size: 0.7rem;
 				animation: shimmerPlaceholder 1.5s ease-in-out infinite;
 				text-shadow: 
-					0 0 10px #5fed83,
+					0 0 10px var(--color-primary),
 					0 0 20px rgba(95, 237, 131, 0.6),
 					0 0 30px rgba(95, 237, 131, 0.3);
 			}
@@ -809,18 +862,18 @@
 				text-align: center;
 				font-weight: bold;
 				font-size: 1.3rem;
-				color: #5fed83;
+				color: var(--color-primary);
 				background: rgba(10, 10, 26, 0.95);
 				padding: 15px 30px;
-				border: 3px solid #5fed83;
+				border: 3px solid var(--color-primary);
 				align-self: center;
 				margin: -10px 0;
 				z-index: 10;
 				box-shadow: 
-					0 0 30px rgba(95, 237, 131, 0.6),
+					0 0 30px var(--color-glow-primary),
 					0 0 60px rgba(95, 237, 131, 0.3),
 					inset 0 0 20px rgba(95, 237, 131, 0.1);
-				text-shadow: 0 0 15px #5fed83;
+				text-shadow: 0 0 15px var(--color-primary);
 				animation: vsBadgeRotate 3s ease infinite;
 				font-family: 'Press Start 2P', cursive;
 				letter-spacing: 3px;
@@ -848,14 +901,14 @@
 			@keyframes vsBadgeRotate {
 				0%, 100% {
 					box-shadow: 
-						0 0 30px rgba(95, 237, 131, 0.6),
+						0 0 30px var(--color-glow-primary),
 						0 0 60px rgba(95, 237, 131, 0.3),
 						inset 0 0 20px rgba(95, 237, 131, 0.1);
 					transform: scale(1);
 				}
 				50% {
 					box-shadow: 
-						0 0 50px rgba(95, 237, 131, 0.8),
+						0 0 50px var(--color-primary),
 						0 0 100px rgba(95, 237, 131, 0.5),
 						inset 0 0 30px rgba(95, 237, 131, 0.2);
 					transform: scale(1.05);
@@ -924,15 +977,15 @@
 				margin-top: 30px;
 				padding: 25px 30px;
 				background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(138, 43, 226, 0.1));
-				border: 3px solid #8a2be2;
+				border: 3px solid var(--color-secondary);
 				font-size: 0.9rem;
 				font-weight: bold;
-				color: #a0f0ff;
+				color: var(--color-light-accent);
 				text-shadow: 
-					0 0 10px #8a2be2,
+					0 0 10px var(--color-secondary),
 					0 0 20px rgba(138, 43, 226, 0.6);
 				box-shadow: 
-					0 0 30px rgba(138, 43, 226, 0.5),
+					0 0 30px var(--color-glow-secondary),
 					0 0 60px rgba(138, 43, 226, 0.3),
 					inset 0 0 20px rgba(138, 43, 226, 0.1);
 				line-height: 1.8;
@@ -943,14 +996,14 @@
 			@keyframes summaryPulse {
 				0%, 100% {
 					box-shadow: 
-						0 0 30px rgba(138, 43, 226, 0.5),
+						0 0 30px var(--color-glow-secondary),
 						0 0 60px rgba(138, 43, 226, 0.3),
 						inset 0 0 20px rgba(138, 43, 226, 0.1);
 					transform: scale(1);
 				}
 				50% {
 					box-shadow: 
-						0 0 50px rgba(138, 43, 226, 0.7),
+						0 0 50px var(--color-secondary),
 						0 0 100px rgba(138, 43, 226, 0.4),
 						inset 0 0 30px rgba(138, 43, 226, 0.2);
 					transform: scale(1.02);
@@ -1000,15 +1053,15 @@
 				color: #000;
 				background: #000;
 				padding: 40px 60px;
-				border: 5px solid #5fed83;
+				border: 5px solid var(--color-primary);
 				box-shadow: 
-					0 0 20px #5fed83,
-					0 0 40px #5fed83,
+					0 0 20px var(--color-primary),
+					0 0 40px var(--color-primary),
 					inset 0 0 20px rgba(95, 237, 131, 0.3);
 				text-shadow: 
-					0 0 10px #5fed83,
-					0 0 20px #5fed83;
-				color: #5fed83;
+					0 0 10px var(--color-primary),
+					0 0 20px var(--color-primary);
+				color: var(--color-primary);
 				opacity: 0;
 				transform: scale(0.5);
 				transition: all 0.5s ease-out;
@@ -1132,6 +1185,7 @@
 			const player2Input = document.getElementById('player2') as HTMLInputElement;
 			const battleBtn = document.getElementById('battleBtn') as HTMLButtonElement;
 			const clearBtn = document.getElementById('clearBtn') as HTMLButtonElement;
+			const themeBtn = document.getElementById('themeBtn') as HTMLButtonElement;
 			const muteBtn = document.getElementById('muteBtn') as HTMLButtonElement;
 			const errorDiv = document.getElementById('error') as HTMLDivElement;
 			const loadingDiv = document.getElementById('loading') as HTMLDivElement;
@@ -1141,6 +1195,7 @@
 			const STORAGE_KEY_PLAYER1 = 'mona-mayhem-player1';
 			const STORAGE_KEY_PLAYER2 = 'mona-mayhem-player2';
 			const STORAGE_KEY_SOUND = 'mona-mayhem-sound-enabled';
+			const STORAGE_KEY_THEME = 'mona-mayhem-theme';
 
 			/**
 			 * Web Audio API Sound Manager
@@ -1298,6 +1353,40 @@
 			}
 
 			const soundManager = new SoundManager();
+
+			/**
+			 * Theme Manager - Handles toggling between color themes
+			 * Stores preference in localStorage and updates the root element class
+			 */
+			class ThemeManager {
+				private currentTheme: string = 'default';
+
+				constructor() {
+					this.currentTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'default';
+					this.applyTheme(this.currentTheme);
+				}
+
+				private applyTheme(theme: string) {
+					if (theme === 'blue-orange') {
+						document.documentElement.classList.add('theme-blue-orange');
+					} else {
+						document.documentElement.classList.remove('theme-blue-orange');
+					}
+					this.currentTheme = theme;
+				}
+
+				public toggleTheme() {
+					const newTheme = this.currentTheme === 'default' ? 'blue-orange' : 'default';
+					this.applyTheme(newTheme);
+					localStorage.setItem(STORAGE_KEY_THEME, newTheme);
+				}
+
+				public getCurrentTheme(): string {
+					return this.currentTheme;
+				}
+			}
+
+			const themeManager = new ThemeManager();
 
 			/**
 			 * Represents a single day's contribution data in GitHub's contribution graph.
@@ -1839,6 +1928,11 @@
 			// Mute button functionality
 			muteBtn.addEventListener('click', () => {
 				soundManager.toggleMute();
+			});
+
+			// Theme button functionality
+			themeBtn.addEventListener('click', () => {
+				themeManager.toggleTheme();
 			});
 
 			// Save usernames to localStorage when they change
